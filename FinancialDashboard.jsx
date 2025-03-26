@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, TrendingUp, LineChart as LineChartIcon, BarChart as BarChartIcon, PieChart as PieChartIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, TrendingUp, BarChart2, Activity, PieChart as PieIcon } from 'lucide-react';
 
 // Mock data - in a real app this would come from your backend
 const performanceData = [
@@ -107,13 +107,13 @@ const FinancialDashboard = () => {
                   className={`p-2 rounded ${chartType === 'line' ? 'bg-gray-200' : 'bg-white'}`}
                   onClick={() => setChartType('line')}
                 >
-                  <LineChartIcon size={16} />
+                  <Activity size={16} />
                 </button>
                 <button
                   className={`p-2 rounded ${chartType === 'area' ? 'bg-gray-200' : 'bg-white'}`}
                   onClick={() => setChartType('area')}
                 >
-                  <BarChartIcon size={16} />
+                  <BarChart2 size={16} />
                 </button>
               </div>
             </div>
