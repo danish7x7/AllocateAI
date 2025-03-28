@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, TrendingUp, BarChart2, Activity, PieChart as PieIcon } from 'lucide-react';
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter } from 'recharts';
+import { ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, TrendingUp, BarChart2, Activity, PieChart as PieIcon, Sparkles, Brain, Zap, AlertTriangle } from 'lucide-react';
 
 // Mock data - in a real app this would come from your backend
 const performanceData = [
@@ -47,12 +47,82 @@ const volatility = [
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#00C49F'];
 
+// Anomaly detection data
+const anomalyData = [
+  { date: 'Jan 2020', value: 1000, anomaly: false },
+  { date: 'Mar 2020', value: 750, anomaly: true },
+  { date: 'Jun 2020', value: 850, anomaly: false },
+  { date: 'Oct 2020', value: 950, anomaly: false },
+  { date: 'Jan 2021', value: 1100, anomaly: false },
+  { date: 'May 2021', value: 1400, anomaly: true },
+  { date: 'Aug 2021', value: 1250, anomaly: false },
+  { date: 'Jan 2022', value: 1150, anomaly: false },
+  { date: 'Apr 2022', value: 900, anomaly: true },
+  { date: 'Aug 2022', value: 1050, anomaly: false },
+  { date: 'Jan 2023', value: 1200, anomaly: false },
+  { date: 'Jun 2023', value: 1300, anomaly: false },
+  { date: 'Oct 2023', value: 1250, anomaly: false },
+  { date: 'Jan 2024', value: 1400, anomaly: false },
+  { date: 'May 2024', value: 1700, anomaly: true },
+  { date: 'Oct 2024', value: 1450, anomaly: false },
+  { date: 'Jan 2025', value: 1550, anomaly: false },
+];
+
+// Scenario analysis data
+const scenarioData = [
+  { month: 'Mar 2025', baseline: 1600, bullish: 1700, bearish: 1500 },
+  { month: 'Jun 2025', baseline: 1650, bullish: 1800, bearish: 1450 },
+  { month: 'Sep 2025', baseline: 1700, bullish: 1900, bearish: 1400 },
+  { month: 'Dec 2025', baseline: 1750, bullish: 2000, bearish: 1350 },
+  { month: 'Mar 2026', baseline: 1800, bullish: 2100, bearish: 1300 },
+];
+
+// AI-generated insights
+const aiInsights = [
+  { 
+    id: 1, 
+    title: "Crypto Patterns Signal Potential Rally", 
+    description: "Analysis of on-chain metrics suggests cryptocurrency accumulation patterns similar to those preceding the 2021 bull run.",
+    confidence: 76,
+    impact: "High",
+    assetClass: "Cryptocurrency"
+  },
+  { 
+    id: 2, 
+    title: "Fixed Assets Hedge Against Market Uncertainty", 
+    description: "Real estate and other fixed assets show increased correlation with inflation expectations, making them effective hedges in the current market.",
+    confidence: 89,
+    impact: "Medium",
+    assetClass: "Fixed Assets"
+  },
+  { 
+    id: 3, 
+    title: "Tech Stock Valuation Warning", 
+    description: "Price-to-earnings ratios in technology sector exceed historical averages by 28%, suggesting potential overvaluation.",
+    confidence: 82,
+    impact: "Medium",
+    assetClass: "Stocks"
+  },
+  { 
+    id: 4, 
+    title: "Interest Rate Impact on Market Rotation", 
+    description: "Pattern detection indicates potential sector rotation from growth to value stocks over next 6 months.",
+    confidence: 71,
+    impact: "High",
+    assetClass: "Stocks"
+  },
+];
+
 const FinancialDashboard = () => {
   const [activeTab, setActiveTab] = useState('performance');
   const [modelAccuracy, setModelAccuracy] = useState(84);
   const [isTraining, setIsTraining] = useState(false);
   const [chartType, setChartType] = useState('line');
   const [showPredictions, setShowPredictions] = useState(true);
+  const [selectedScenario, setSelectedScenario] = useState('baseline');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [showAiExplanation, setShowAiExplanation] = useState(false);
   
   // Combined data with historical and predictions
   const combinedData = showPredictions 
@@ -93,6 +163,15 @@ const FinancialDashboard = () => {
           onClick={() => setActiveTab('ml')}
         >
           ML Predictions
+        </button>
+        <button
+          className={`px-4 py-2 rounded-md ${activeTab === 'ai' ? 'bg-blue-100 text-blue-700' : 'text-gray-700'}`}
+          onClick={() => setActiveTab('ai')}
+        >
+          <div className="flex items-center">
+            <Sparkles size={14} className="mr-1" />
+            AI Insights
+          </div>
         </button>
       </div>
 
@@ -460,6 +539,196 @@ const FinancialDashboard = () => {
           </div>
         </div>
       )}
+      
+      {/* AI Insights Tab */}
+      {activeTab === 'ai' && (
+        <div className="space-y-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                  <Sparkles size={20} className="mr-2 text-yellow-500" />
+                  AI-Powered Market Insights
+                </h2>
+                <p className="text-sm text-gray-600">Real-time analysis and pattern detection across global markets</p>
+              </div>
+              <button 
+                className="px-3 py-2 bg-blue-50 text-blue-600 rounded-md flex items-center text-sm font-medium"
+                onClick={() => {
+                  setIsAnalyzing(true);
+                  setAnalysisProgress(0);
+                  const timer = setInterval(() => {
+                    setAnalysisProgress(prev => {
+                      if (prev >= 100) {
+                        clearInterval(timer);
+                        setIsAnalyzing(false);
+                        return 100;
+                      }
+                      return prev + 5;
+                    });
+                  }, 100);
+                }}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    Analyzing {analysisProgress}%
+                  </>
+                ) : (
+                  <>
+                    <Brain size={16} className="mr-2" />
+                    Run New Analysis
+                  </>
+                )}
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+              <div className="border rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-4">Anomaly Detection</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart
+                      margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="category" dataKey="date" name="Date" />
+                      <YAxis type="number" dataKey="value" name="Value" />
+                      <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                      <Scatter 
+                        name="Stock Values" 
+                        data={anomalyData} 
+                        fill={(entry) => entry.anomaly ? '#ff4d4f' : '#82ca9d'}
+                        shape={(props) => {
+                          const { cx, cy, fill } = props;
+                          if (props.payload.anomaly) {
+                            return (
+                              <g>
+                                <circle cx={cx} cy={cy} r={6} fill={fill} />
+                                <circle cx={cx} cy={cy} r={10} fill="none" stroke={fill} />
+                              </g>
+                            );
+                          }
+                          return <circle cx={cx} cy={cy} r={6} fill={fill} />;
+                        }}
+                      />
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-2 text-sm text-gray-600 flex items-start">
+                  <AlertTriangle size={16} className="text-yellow-500 mr-2 flex-shrink-0 mt-1" />
+                  <span>AI has detected 4 market anomalies (red points) that might indicate trend shifts.</span>
+                </div>
+              </div>
+              
+              <div className="border rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-4">Scenario Analysis</h3>
+                <div className="mb-3 flex justify-between">
+                  <div className="flex space-x-3">
+                    <button
+                      className={`px-3 py-1 text-xs rounded-full ${selectedScenario === 'baseline' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
+                      onClick={() => setSelectedScenario('baseline')}
+                    >
+                      Baseline
+                    </button>
+                    <button
+                      className={`px-3 py-1 text-xs rounded-full ${selectedScenario === 'bullish' ? 'bg-green-100 text-green-700' : 'bg-gray-100'}`}
+                      onClick={() => setSelectedScenario('bullish')}
+                    >
+                      Bullish
+                    </button>
+                    <button
+                      className={`px-3 py-1 text-xs rounded-full ${selectedScenario === 'bearish' ? 'bg-red-100 text-red-700' : 'bg-gray-100'}`}
+                      onClick={() => setSelectedScenario('bearish')}
+                    >
+                      Bearish
+                    </button>
+                  </div>
+                  <button
+                    className="text-blue-600 text-sm flex items-center"
+                    onClick={() => setShowAiExplanation(!showAiExplanation)}
+                  >
+                    {showAiExplanation ? 'Hide explanation' : 'How it works'} 
+                    {showAiExplanation ? <ChevronUp size={14} className="ml-1" /> : <ChevronDown size={14} className="ml-1" />}
+                  </button>
+                </div>
+                
+                {showAiExplanation && (
+                  <div className="bg-blue-50 p-3 rounded-md mb-3 text-sm text-blue-800">
+                    <p className="mb-2">Our AI runs 10,000+ simulations based on:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Historical market behavior patterns</li>
+                      <li>Current macroeconomic indicators</li>
+                      <li>Sentiment analysis from news and social media</li>
+                      <li>Network analysis of asset correlations</li>
+                    </ul>
+                  </div>
+                )}
+                
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={scenarioData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="baseline" 
+                        stroke="#8884d8" 
+                        name="Baseline"
+                        strokeWidth={selectedScenario === 'baseline' ? 3 : 1}
+                        opacity={selectedScenario === 'baseline' ? 1 : 0.5}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="bullish" 
+                        stroke="#82ca9d" 
+                        name="Bullish"
+                        strokeWidth={selectedScenario === 'bullish' ? 3 : 1}
+                        opacity={selectedScenario === 'bullish' ? 1 : 0.5}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="bearish" 
+                        stroke="#ff8042" 
+                        name="Bearish"
+                        strokeWidth={selectedScenario === 'bearish' ? 3 : 1}
+                        opacity={selectedScenario === 'bearish' ? 1 : 0.5}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  <div className="flex items-center justify-between">
+                    <span>Scenario probability:</span>
+                    <div className="space-x-3">
+                      <span className="text-blue-600">Baseline: 65%</span>
+                      <span className="text-green-600">Bullish: 20%</span>
+                      <span className="text-red-600">Bearish: 15%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-medium mb-4 flex items-center">
+                <Zap size={18} className="mr-2 text-yellow-500" />
+                AI-Generated Investment Insights
+              </h3>
+              <div className="space-y-4">
+                {aiInsights.map((insight) => (
+                  <div key={insight.id} className="border rounded-lg p-3 hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-medium">{insight.title}</h4>
+                      <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        {insight.assetClass}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 my-2">{insight.description}</p>
+                    <div className="flex justify-between text-xs text-gray
     </div>
   );
 };
